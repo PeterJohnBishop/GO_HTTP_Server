@@ -48,3 +48,21 @@ func Connect(db *sql.DB) (*sql.DB, error) {
 	fmt.Printf("Successfully connected to Postgres DB: %s!", dbname)
 	return mydb, nil
 }
+
+func CreateUsersTable(db *sql.DB) error {
+	query := `
+	CREATE TABLE IF NOT EXISTS users (
+		id TEXT UNIQUE NOT NULL PRIMARY KEY,
+		name TEXT UNIQUE NOT NULL,
+		email TEXT UNIQUE NOT NULL,
+		password TEXT NOT NULL,
+		created_at TIMESTAMP DEFAULT NOW(),
+		updated_at TIMESTAMP DEFAULT NOW()
+	);`
+
+	_, err := db.Exec(query)
+	if err != nil {
+		return fmt.Errorf("error creating users table: %w", err)
+	}
+	return nil
+}
