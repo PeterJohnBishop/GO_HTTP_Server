@@ -90,11 +90,11 @@ func GetUserByEmailHandler(db *sql.DB, w http.ResponseWriter, r *http.Request) {
 	}
 
 	pathParts := strings.Split(r.URL.Path, "/")
-	if len(pathParts) < 3 || pathParts[1] != "users" {
+	if len(pathParts) < 4 || pathParts[2] != "get" {
 		http.Error(w, "Invalid URL", http.StatusBadRequest)
 		return
 	}
-	email := pathParts[2]
+	email := pathParts[3]
 
 	authHeader := r.Header.Get("Authorization")
 	if authHeader == "" {
@@ -134,11 +134,11 @@ func GetUserByIDHandler(db *sql.DB, w http.ResponseWriter, r *http.Request) {
 	}
 
 	pathParts := strings.Split(r.URL.Path, "/")
-	if len(pathParts) < 3 || pathParts[1] != "users" {
+	if len(pathParts) < 4 || pathParts[2] != "get" {
 		http.Error(w, "Invalid URL", http.StatusBadRequest)
 		return
 	}
-	id := pathParts[2]
+	id := pathParts[3]
 
 	authHeader := r.Header.Get("Authorization")
 	if authHeader == "" {
@@ -215,11 +215,11 @@ func UpdateUserHandler(db *sql.DB, w http.ResponseWriter, r *http.Request) {
 	}
 
 	pathParts := strings.Split(r.URL.Path, "/")
-	if len(pathParts) < 3 || pathParts[1] != "users" {
+	if len(pathParts) < 4 || pathParts[2] != "update" {
 		http.Error(w, "Invalid URL", http.StatusBadRequest)
 		return
 	}
-	id := pathParts[2]
+	id := pathParts[3]
 
 	authHeader := r.Header.Get("Authorization")
 	if authHeader == "" {
@@ -265,11 +265,11 @@ func DeleteUserHandler(db *sql.DB, w http.ResponseWriter, r *http.Request) {
 	}
 
 	pathParts := strings.Split(r.URL.Path, "/")
-	if len(pathParts) < 3 || pathParts[1] != "users" {
+	if len(pathParts) < 4 || pathParts[2] != "delete" {
 		http.Error(w, "Invalid URL", http.StatusBadRequest)
 		return
 	}
-	id := pathParts[2]
+	id := pathParts[3]
 
 	authHeader := r.Header.Get("Authorization")
 	if authHeader == "" {

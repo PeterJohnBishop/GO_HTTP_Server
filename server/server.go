@@ -17,16 +17,16 @@ func addUserRoutes(db *sql.DB, mux *http.ServeMux) {
 	mux.Handle("/users/", http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		routes.GetUsersHandler(db, w, r)
 	}))
-	mux.Handle("/users/:email", http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+	mux.Handle("/users/get/:email", http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		routes.GetUserByEmailHandler(db, w, r)
 	}))
-	mux.Handle("/users/:id", http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+	mux.Handle("/users/get/:id", http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		routes.GetUserByIDHandler(db, w, r)
 	}))
-	mux.Handle("/users/:id", http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+	mux.Handle("/users/update/:id", http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		routes.UpdateUserHandler(db, w, r)
 	}))
-	mux.Handle("/users/:id", http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+	mux.Handle("/users/delete/:id", http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		routes.DeleteUserHandler(db, w, r)
 	}))
 }
