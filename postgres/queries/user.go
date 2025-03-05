@@ -18,26 +18,26 @@ type User struct {
 	UpdatedAt time.Time `json:"updated_at"`
 }
 
-func CreateUser(db *sql.DB, user User) error {
+func CreateUser(db *sql.DB, user User) (User, error) {
 
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()
 
 	id, err := uuid.NewV1()
 	if err != nil {
-		return err
+		return User{}, err
 	}
 	userID := "user_" + id.String()
 	hashedPassword, err := auth.HashedPassword(user.Password)
 	if err != nil {
-		return err
+		return User{}, err
 	}
 	query := "INSERT INTO users (id, name, email, password) VALUES ($1, $2, $3, $4) RETURNING created_at"
 	queryErr := db.QueryRowContext(ctx, query, userID, user.Name, user.Email, hashedPassword).Scan(&user.CreatedAt)
 	if queryErr != nil {
-		return queryErr
+		return User{}, queryErr
 	}
-	return nil
+	return user, nil
 }
 
 func GetUsers(db *sql.DB) ([]User, error) {
@@ -101,7 +101,7 @@ func UpdateUserByID(db *sql.DB, id string, user User) (User, error) {
 	UPDATE users 
 	SET name = $1, email = $2, password = $3, updated_at = NOW() 
 	WHERE id = $4 
-	RETURNING user_id, name, email, password, created_at, updated_at`
+	RETURNING id, name, email, password, created_at, updated_at`
 	var updatedUser User
 	err := db.QueryRowContext(ctx, query, user.Name, user.Email, user.Password, id).
 		Scan(&updatedUser.ID, &updatedUser.Name, &updatedUser.Email, &updatedUser.Password, &updatedUser.CreatedAt, &updatedUser.UpdatedAt)

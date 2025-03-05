@@ -23,10 +23,15 @@ func CreateUserHandler(db *sql.DB, w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	defer r.Body.Close()
+	userCreated, err := queries.CreateUser(db, user)
+	if err != nil {
+		http.Error(w, `{"error": "Failed to create user"}`, http.StatusInternalServerError)
+		return
+	}
 
 	response := map[string]interface{}{
 		"message": "User Created Successfully",
-		"user":    user,
+		"user":    userCreated,
 	}
 
 	w.Header().Set("Content-Type", "application/json")
@@ -90,7 +95,7 @@ func GetUserByEmailHandler(db *sql.DB, w http.ResponseWriter, r *http.Request) {
 	}
 
 	pathParts := strings.Split(r.URL.Path, "/")
-	if len(pathParts) < 4 || pathParts[2] != "get" {
+	if len(pathParts) < 4 || pathParts[2] != "email" {
 		http.Error(w, "Invalid URL", http.StatusBadRequest)
 		return
 	}
@@ -134,7 +139,7 @@ func GetUserByIDHandler(db *sql.DB, w http.ResponseWriter, r *http.Request) {
 	}
 
 	pathParts := strings.Split(r.URL.Path, "/")
-	if len(pathParts) < 4 || pathParts[2] != "get" {
+	if len(pathParts) < 4 || pathParts[2] != "id" {
 		http.Error(w, "Invalid URL", http.StatusBadRequest)
 		return
 	}
@@ -248,7 +253,7 @@ func UpdateUserHandler(db *sql.DB, w http.ResponseWriter, r *http.Request) {
 	}
 
 	response := map[string]interface{}{
-		"message": "User updatged!",
+		"message": "User updated!",
 		"user":    updatedUser,
 	}
 
