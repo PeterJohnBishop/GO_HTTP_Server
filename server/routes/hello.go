@@ -5,8 +5,8 @@ import (
 	"net/http"
 )
 
-// Hello is a simple handler function that writes "Hello, World!" to the response writer
+// for testing purposes
 func Hello(w http.ResponseWriter, r *http.Request) {
-	fmt.Println("Hello, World!")
-	w.Write([]byte("Hello, World!"))
+	fmt.Println("Go!")
+	w.Write([]byte("Go!"))
 }

@@ -101,18 +101,6 @@ func GetUserByEmailHandler(db *sql.DB, w http.ResponseWriter, r *http.Request) {
 	}
 	email := pathParts[3]
 
-	authHeader := r.Header.Get("Authorization")
-	if authHeader == "" {
-		http.Error(w, `{"error": "Authentication Header is missing!"}`, http.StatusUnauthorized)
-		return
-	}
-	token := strings.TrimPrefix(authHeader, "Bearer ")
-	err := auth.VerifyToken(token)
-	if err != nil {
-		http.Error(w, `{"error": "Failed to verify token!"}`, http.StatusUnauthorized)
-		return
-	}
-
 	var user queries.User
 	foundUser, err := queries.GetUserByEmail(db, email)
 	if err != nil {
@@ -145,18 +133,6 @@ func GetUserByIDHandler(db *sql.DB, w http.ResponseWriter, r *http.Request) {
 	}
 	id := pathParts[3]
 
-	authHeader := r.Header.Get("Authorization")
-	if authHeader == "" {
-		http.Error(w, `{"error": "Authentication Header is missing!"}`, http.StatusUnauthorized)
-		return
-	}
-	token := strings.TrimPrefix(authHeader, "Bearer ")
-	err := auth.VerifyToken(token)
-	if err != nil {
-		http.Error(w, `{"error": "Failed to verify token!"}`, http.StatusUnauthorized)
-		return
-	}
-
 	var user queries.User
 	foundUser, err := queries.GetUserByID(db, id)
 	if err != nil {
@@ -179,18 +155,6 @@ func GetUsersHandler(db *sql.DB, w http.ResponseWriter, r *http.Request) {
 
 	if r.Method != http.MethodGet {
 		http.Error(w, "Method not allowed", http.StatusMethodNotAllowed)
-		return
-	}
-
-	authHeader := r.Header.Get("Authorization")
-	if authHeader == "" {
-		http.Error(w, `{"error": "Authentication Header is missing!"}`, http.StatusUnauthorized)
-		return
-	}
-	token := strings.TrimPrefix(authHeader, "Bearer ")
-	err := auth.VerifyToken(token)
-	if err != nil {
-		http.Error(w, `{"error": "Failed to verify token!"}`, http.StatusUnauthorized)
 		return
 	}
 
@@ -225,18 +189,6 @@ func UpdateUserHandler(db *sql.DB, w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	id := pathParts[3]
-
-	authHeader := r.Header.Get("Authorization")
-	if authHeader == "" {
-		http.Error(w, `{"error": "Authentication Header is missing!"}`, http.StatusUnauthorized)
-		return
-	}
-	token := strings.TrimPrefix(authHeader, "Bearer ")
-	err := auth.VerifyToken(token)
-	if err != nil {
-		http.Error(w, `{"error": "Failed to verify token!"}`, http.StatusUnauthorized)
-		return
-	}
 
 	var user queries.User
 
@@ -276,17 +228,6 @@ func DeleteUserHandler(db *sql.DB, w http.ResponseWriter, r *http.Request) {
 	}
 	id := pathParts[3]
 
-	authHeader := r.Header.Get("Authorization")
-	if authHeader == "" {
-		http.Error(w, `{"error": "Authentication Header is missing!"}`, http.StatusUnauthorized)
-		return
-	}
-	token := strings.TrimPrefix(authHeader, "Bearer ")
-	err := auth.VerifyToken(token)
-	if err != nil {
-		http.Error(w, `{"error": "Failed to verify token!"}`, http.StatusUnauthorized)
-		return
-	}
 	dbErr := queries.DeleteUserByID(db, id)
 	if dbErr != nil {
 		http.Error(w, `{"error": "Failed to delete user!"}`, http.StatusInternalServerError)
