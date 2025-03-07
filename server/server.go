@@ -42,12 +42,14 @@ func addUserRoutes(db *sql.DB, mux *http.ServeMux) {
 	}))
 }
 
+// func Hello(w http.ResponseWriter, r *http.Request) {
+// 	fmt.Println("Go!")
+// 	w.Write([]byte("Go!"))
+// }
+
 func StartServer(db *sql.DB) error {
 	mux := http.NewServeMux()
-	mux.Handle(("/"), http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		// for testing purposes
-		routes.Hello(w, r)
-	}))
+	mux.Handle(("/"), http.HandlerFunc(routes.Hello))
 	addUserRoutes(db, mux)
 	fmt.Println("Server started at http://localhost:8080")
 	err := http.ListenAndServe(":8080", mux)
