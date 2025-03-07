@@ -7,6 +7,9 @@ import (
 	"free-adventure-go/main.go/postgres/queries"
 	"net/http"
 	"strings"
+	"time"
+
+	"github.com/golang-jwt/jwt"
 )
 
 func CreateUserHandler(db *sql.DB, w http.ResponseWriter, r *http.Request) {
@@ -70,16 +73,33 @@ func Login(db *sql.DB, w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	token, err := auth.CreateToken(req.Email)
+	userClaims := auth.UserClaims{
+		ID:    user.ID,
+		Name:  user.Name,
+		Email: user.Email,
+		StandardClaims: jwt.StandardClaims{
+			IssuedAt:  time.Now().Unix(),
+			ExpiresAt: time.Now().Add(time.Minute * 15).Unix(),
+		},
+	}
+
+	token, err := auth.NewAccessToken(userClaims)
 	if err != nil {
 		http.Error(w, `{"error": "Failed to generate authentication token"}`, http.StatusInternalServerError)
 		return
 	}
 
+	refreshToken, err := auth.NewRefreshToken(userClaims.StandardClaims)
+	if err != nil {
+		http.Error(w, `{"error": "Failed to generate refresh token"}`, http.StatusInternalServerError)
+		return
+	}
+
 	response := map[string]interface{}{
-		"message": "Login Success",
-		"token":   token,
-		"user":    user,
+		"message":      "Login Success",
+		"token":        token,
+		"refreshToken": refreshToken,
+		"user":         user,
 	}
 
 	w.Header().Set("Content-Type", "application/json")
