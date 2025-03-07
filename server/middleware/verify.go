@@ -10,13 +10,9 @@ import (
 
 //////////////////////////////////////// IN PROGRESS ////////////////////////////////////////
 
-type contextKey string
-
-const userClaimsKey contextKey = "userClaims"
-
 // authenticate JWT token
-func VerifyJWT(next http.Handler) http.Handler {
-	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+func VerifyJWT(next http.HandlerFunc) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
 		if strings.HasPrefix((r.URL.Path), "/register") || strings.HasPrefix((r.URL.Path), "/login") {
 			next.ServeHTTP(w, r)
 			return
@@ -32,22 +28,22 @@ func VerifyJWT(next http.Handler) http.Handler {
 			http.Error(w, `{"error": "Failed to verify token!"}`, http.StatusUnauthorized)
 			return
 		}
-
-		// Store claims in context
-		ctx := context.WithValue(r.Context(), userClaimsKey, userClaims)
-		r = r.WithContext(ctx) // Assign the modified request back
-
-		next.ServeHTTP(w, r)
-	})
+		next(w, r)
+	}
 }
 
 // authenticate Refresh Token
 type VerifyRefreshRequest struct {
+	ID    string `json:"id"`
 	Token string `json:"token"`
 }
 
-func VerifyRefreshToken(next http.Handler) http.Handler {
-	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+type ContextKey string
+
+const userIDKey ContextKey = "userID"
+
+func VerifyRefreshToken(next http.HandlerFunc) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
 		var req VerifyRefreshRequest
 
 		if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
@@ -57,16 +53,17 @@ func VerifyRefreshToken(next http.Handler) http.Handler {
 		defer r.Body.Close()
 
 		token := req.Token
+		id := req.ID
+
 		claims := auth.ParseRefreshToken(token)
 		if claims == nil {
 			http.Error(w, `{"error": "Failed to verify token!"}`, http.StatusUnauthorized)
 			return
 		}
-		// Add userClaims to the request context
-		next.ServeHTTP(w, r)
-	})
+
+		ctx := context.WithValue(r.Context(), userIDKey, id)
+		r = r.WithContext(ctx)
+
+		next(w, r)
+	}
 }
-
-// generate new access token
-
-// generate new refresh token

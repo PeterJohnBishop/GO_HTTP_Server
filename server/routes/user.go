@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"free-adventure-go/main.go/auth"
 	"free-adventure-go/main.go/postgres/queries"
+	"free-adventure-go/main.go/server/middleware"
 	"net/http"
 	"strings"
 	"time"
@@ -100,6 +101,59 @@ func Login(db *sql.DB, w http.ResponseWriter, r *http.Request) {
 		"token":        token,
 		"refreshToken": refreshToken,
 		"user":         user,
+	}
+
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(http.StatusOK)
+	json.NewEncoder(w).Encode(response)
+}
+
+func RefreshTokenHandler(db *sql.DB, w http.ResponseWriter, r *http.Request) {
+
+	if r.Method != http.MethodPost {
+		http.Error(w, "Method not allowed", http.StatusMethodNotAllowed)
+		return
+	}
+	const userIDKey middleware.ContextKey = "userID"
+
+	id, ok := r.Context().Value(userIDKey).(string)
+	if !ok {
+		http.Error(w, `{"error": "ID not found in context"}`, http.StatusInternalServerError)
+		return
+	}
+
+	user, err := queries.GetUserByID(db, id)
+	if err != nil {
+		http.Error(w, `{"error": "Failed to get user by that email"}`, http.StatusInternalServerError)
+		return
+	}
+
+	userClaims := auth.UserClaims{
+		ID:    user.ID,
+		Name:  user.Name,
+		Email: user.Email,
+		StandardClaims: jwt.StandardClaims{
+			IssuedAt:  time.Now().Unix(),
+			ExpiresAt: time.Now().Add(time.Minute * 15).Unix(),
+		},
+	}
+
+	token, err := auth.NewAccessToken(userClaims)
+	if err != nil {
+		http.Error(w, `{"error": "Failed to generate authentication token"}`, http.StatusInternalServerError)
+		return
+	}
+
+	refreshToken, err := auth.NewRefreshToken(userClaims.StandardClaims)
+	if err != nil {
+		http.Error(w, `{"error": "Failed to generate refresh token"}`, http.StatusInternalServerError)
+		return
+	}
+
+	response := map[string]interface{}{
+		"message":      "Token Refreshed",
+		"token":        token,
+		"refreshToken": refreshToken,
 	}
 
 	w.Header().Set("Content-Type", "application/json")
