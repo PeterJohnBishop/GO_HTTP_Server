@@ -7,7 +7,6 @@ import (
 	"free-adventure-go/main.go/postgres/queries"
 	"free-adventure-go/main.go/server/middleware"
 	"net/http"
-	"strings"
 	"time"
 
 	"github.com/golang-jwt/jwt"
@@ -161,19 +160,19 @@ func RefreshTokenHandler(db *sql.DB, w http.ResponseWriter, r *http.Request) {
 	json.NewEncoder(w).Encode(response)
 }
 
-func GetUserByEmailHandler(db *sql.DB, w http.ResponseWriter, r *http.Request) {
+func GetUserByEmailHandler(db *sql.DB, w http.ResponseWriter, r *http.Request, email string) {
 
 	if r.Method != http.MethodGet {
 		http.Error(w, "Method not allowed", http.StatusMethodNotAllowed)
 		return
 	}
 
-	pathParts := strings.Split(r.URL.Path, "/")
-	if len(pathParts) < 4 || pathParts[2] != "email" {
-		http.Error(w, "Invalid URL", http.StatusBadRequest)
-		return
-	}
-	email := pathParts[3]
+	// pathParts := strings.Split(r.URL.Path, "/")
+	// if len(pathParts) < 4 || pathParts[2] != "email" {
+	// 	http.Error(w, "Invalid URL", http.StatusBadRequest)
+	// 	return
+	// }
+	// email := pathParts[3]
 
 	var user queries.User
 	foundUser, err := queries.GetUserByEmail(db, email)
@@ -193,19 +192,19 @@ func GetUserByEmailHandler(db *sql.DB, w http.ResponseWriter, r *http.Request) {
 	json.NewEncoder(w).Encode(response)
 }
 
-func GetUserByIDHandler(db *sql.DB, w http.ResponseWriter, r *http.Request) {
+func GetUserByIDHandler(db *sql.DB, w http.ResponseWriter, r *http.Request, id string) {
 
 	if r.Method != http.MethodGet {
 		http.Error(w, "Method not allowed", http.StatusMethodNotAllowed)
 		return
 	}
 
-	pathParts := strings.Split(r.URL.Path, "/")
-	if len(pathParts) < 4 || pathParts[2] != "id" {
-		http.Error(w, "Invalid URL", http.StatusBadRequest)
-		return
-	}
-	id := pathParts[3]
+	// pathParts := strings.Split(r.URL.Path, "/")
+	// if len(pathParts) < 4 || pathParts[2] != "id" {
+	// 	http.Error(w, "Invalid URL", http.StatusBadRequest)
+	// 	return
+	// }
+	// id := pathParts[3]
 
 	var user queries.User
 	foundUser, err := queries.GetUserByID(db, id)
@@ -250,19 +249,19 @@ func GetUsersHandler(db *sql.DB, w http.ResponseWriter, r *http.Request) {
 	json.NewEncoder(w).Encode(response)
 }
 
-func UpdateUserHandler(db *sql.DB, w http.ResponseWriter, r *http.Request) {
+func UpdateUserHandler(db *sql.DB, w http.ResponseWriter, r *http.Request, id string) {
 
 	if r.Method != http.MethodPut {
 		http.Error(w, "Method not allowed", http.StatusMethodNotAllowed)
 		return
 	}
 
-	pathParts := strings.Split(r.URL.Path, "/")
-	if len(pathParts) < 4 || pathParts[2] != "update" {
-		http.Error(w, "Invalid URL", http.StatusBadRequest)
-		return
-	}
-	id := pathParts[3]
+	// pathParts := strings.Split(r.URL.Path, "/")
+	// if len(pathParts) < 4 || pathParts[2] != "update" {
+	// 	http.Error(w, "Invalid URL", http.StatusBadRequest)
+	// 	return
+	// }
+	// id := pathParts[3]
 
 	var user queries.User
 
@@ -288,19 +287,19 @@ func UpdateUserHandler(db *sql.DB, w http.ResponseWriter, r *http.Request) {
 	json.NewEncoder(w).Encode(response)
 }
 
-func DeleteUserHandler(db *sql.DB, w http.ResponseWriter, r *http.Request) {
+func DeleteUserHandler(db *sql.DB, w http.ResponseWriter, r *http.Request, id string) {
 
 	if r.Method != http.MethodDelete {
 		http.Error(w, "Method not allowed", http.StatusMethodNotAllowed)
 		return
 	}
 
-	pathParts := strings.Split(r.URL.Path, "/")
-	if len(pathParts) < 4 || pathParts[2] != "delete" {
-		http.Error(w, "Invalid URL", http.StatusBadRequest)
-		return
-	}
-	id := pathParts[3]
+	// pathParts := strings.Split(r.URL.Path, "/")
+	// if len(pathParts) < 4 || pathParts[2] != "delete" {
+	// 	http.Error(w, "Invalid URL", http.StatusBadRequest)
+	// 	return
+	// }
+	// id := pathParts[3]
 
 	dbErr := queries.DeleteUserByID(db, id)
 	if dbErr != nil {

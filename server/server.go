@@ -21,20 +21,24 @@ func addUserRoutes(db *sql.DB, mux *http.ServeMux) {
 		routes.GetUsersHandler(db, w, r)
 	}))
 
-	mux.HandleFunc("/users/email/", middleware.VerifyJWT(func(w http.ResponseWriter, r *http.Request) {
-		routes.GetUserByEmailHandler(db, w, r)
+	mux.HandleFunc("/users/email/{email}", middleware.VerifyJWT(func(w http.ResponseWriter, r *http.Request) {
+		email := r.PathValue("email")
+		routes.GetUserByEmailHandler(db, w, r, email)
 	}))
 
-	mux.HandleFunc("/users/id/", middleware.VerifyJWT(func(w http.ResponseWriter, r *http.Request) {
-		routes.GetUserByIDHandler(db, w, r)
+	mux.HandleFunc("/users/id/{id}", middleware.VerifyJWT(func(w http.ResponseWriter, r *http.Request) {
+		id := r.PathValue("id")
+		routes.GetUserByIDHandler(db, w, r, id)
 	}))
 
-	mux.HandleFunc("/users/update/", middleware.VerifyJWT(func(w http.ResponseWriter, r *http.Request) {
-		routes.UpdateUserHandler(db, w, r)
+	mux.HandleFunc("/users/update/{id}", middleware.VerifyJWT(func(w http.ResponseWriter, r *http.Request) {
+		id := r.PathValue("id")
+		routes.UpdateUserHandler(db, w, r, id)
 	}))
 
-	mux.HandleFunc("/users/delete/", middleware.VerifyJWT(func(w http.ResponseWriter, r *http.Request) {
-		routes.DeleteUserHandler(db, w, r)
+	mux.HandleFunc("/users/delete/{id}", middleware.VerifyJWT(func(w http.ResponseWriter, r *http.Request) {
+		id := r.PathValue("id")
+		routes.DeleteUserHandler(db, w, r, id)
 	}))
 
 	mux.HandleFunc("/users/refresh/", middleware.VerifyRefreshToken(func(w http.ResponseWriter, r *http.Request) {
