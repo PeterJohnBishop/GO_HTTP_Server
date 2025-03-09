@@ -19,11 +19,8 @@ func getStripeKey() (string, error) {
 	return os.Getenv("STRIPE_PK_TEST"), nil
 }
 
-var stripeKey string
-var err error
-
 func InitStripe() {
-	stripeKey, err = getStripeKey()
+	stripeKey, err := getStripeKey()
 	if err != nil {
 		panic(err)
 	}
@@ -40,4 +37,5 @@ func GetBalance() (*stripe.Balance, error) {
 	}
 	fmt.Printf("Current Availible Stripe Balance: $%d ", result.Available[0].Amount)
 	return result, nil
+
 }
