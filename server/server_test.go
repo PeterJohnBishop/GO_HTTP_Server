@@ -303,4 +303,5 @@ func TestUserEndpoints(t *testing.T) {
 			fmt.Println("PASS")
 		}
 	})
+	fmt.Println("Complete test results for User Endpoints: ")
 }

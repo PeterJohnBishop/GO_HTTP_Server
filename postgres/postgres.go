@@ -45,7 +45,7 @@ func Connect(db *sql.DB) (*sql.DB, error) {
 	if err != nil {
 		return nil, err
 	}
-	fmt.Printf("Successfully connected to Postgres DB: %s!", dbname)
+	fmt.Printf("Successfully connected to Postgres DB: %s! ", dbname)
 	return mydb, nil
 }
 

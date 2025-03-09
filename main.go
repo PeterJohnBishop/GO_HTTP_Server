@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"free-adventure-go/main.go/postgres"
 	"free-adventure-go/main.go/server"
+	"free-adventure-go/main.go/stripe"
 	"log"
 
 	_ "github.com/lib/pq"
@@ -15,6 +16,8 @@ var db *sql.DB // global instance of db to share throughout the application
 func main() {
 
 	fmt.Println("Lets, Go!")
+
+	stripe.InitStripe()
 
 	db, err := postgres.Connect(db)
 	if err != nil {
