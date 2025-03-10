@@ -11,3 +11,4 @@ A Go / HTTP server
     + Create a ClickUp Automation or Webhook that sends data to the server 
     + Create an endpoint that determines the action that should be taken
     + Send back errors in the form of Task Comments
+- Integrate this with ClickUp to save audit logs on task activity?

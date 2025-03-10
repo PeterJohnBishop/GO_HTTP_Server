@@ -3,10 +3,8 @@ package main
 import (
 	"database/sql"
 	"fmt"
-	"free-adventure-go/main.go/clickup"
 	"free-adventure-go/main.go/postgres"
 	"free-adventure-go/main.go/server"
-	"free-adventure-go/main.go/stripe"
 	"log"
 
 	_ "github.com/lib/pq"
@@ -18,8 +16,8 @@ func main() {
 
 	fmt.Println("Lets, Go!")
 
-	stripe.InitStripe()
-	clickup.GetWorkspaces()
+	// stripe.InitStripe()
+	// clickup.GetWorkspaces()
 
 	db, err := postgres.Connect(db)
 	if err != nil {
