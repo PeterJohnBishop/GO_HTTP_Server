@@ -3,21 +3,20 @@ package main
 import (
 	"database/sql"
 	"fmt"
+	"free-adventure-go/main.go/cli"
 	"free-adventure-go/main.go/postgres"
 	"free-adventure-go/main.go/server"
 	"log"
+	"sync"
 
 	_ "github.com/lib/pq"
 )
 
-var db *sql.DB // global instance of db to share throughout the application
+var db *sql.DB
 
 func main() {
 
 	fmt.Println("Lets, Go!")
-
-	// stripe.InitStripe()
-	// clickup.GetWorkspaces()
 
 	db, err := postgres.Connect(db)
 	if err != nil {
@@ -30,9 +29,18 @@ func main() {
 	}
 	defer db.Close()
 
-	svrErr := server.StartServer(db)
-	if svrErr != nil {
-		log.Fatalf("Error starting server: %v", svrErr)
-	}
+	var wg sync.WaitGroup
+	wg.Add(1)
+	go func() {
+		defer wg.Done()
+		svrErr := server.StartServer(db)
+		if svrErr != nil {
+			log.Fatalf("Error starting server: %v", svrErr)
+		}
+	}()
+
+	cli.StartCLI()
+
+	wg.Wait()
 
 }
