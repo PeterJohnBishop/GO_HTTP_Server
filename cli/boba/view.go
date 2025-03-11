@@ -1,74 +1,35 @@
 package boba
 
-import (
-	"fmt"
-)
+import "fmt"
 
-func QueryUsers() string {
-	return "Finding all users!"
-}
-
-func QueryItems() string {
-	return "Finding all items!"
-}
-
-func QueryOrders() string {
-	return "Finding all orders!"
-}
-func QueryInvoices() string {
-	return "Finding all invoices!"
-}
-func QueryPayments() string {
-	return "Finding all payments!"
-}
+// Create a view string with the model data!
 
 func (m model) View() string {
-	// The header
-	s := "\n\nFETCH:\n\n"
 
-	// Iterate over our choices
+	s := "\n\nHey there!\n\n"
+
 	for i, choice := range m.options {
-
-		// Is the cursor pointing at this choice?
-		cursor := " " // no cursor
+		cursor := " "
 		if m.cursor == i {
-			cursor = ">" // cursor!
+			cursor = ">"
 		}
 
-		// Is this choice selected?
-		checked := " " // not selected
+		checked := " "
 		if _, ok := m.selected[i]; ok {
-			checked = "x" // selected!
+			checked = "x"
 		}
 
-		getting := ""
-		if _, ok := m.selected[i]; ok {
-			switch m.options[i] {
-			case "Users":
-				result := QueryUsers()
-				getting = ("-> " + m.spinner.View() + result)
-			case "Items":
-				result := QueryItems()
-				getting = ("-> " + m.spinner.View() + result)
-			case "Orders":
-				result := QueryOrders()
-				getting = ("-> " + m.spinner.View() + result)
-			case "Invoices":
-				result := QueryInvoices()
-				getting = ("-> " + m.spinner.View() + result)
-			case "Payments":
-				result := QueryPayments()
-				getting = ("-> " + m.spinner.View() + result)
-			}
-		} else {
-			getting = ""
-		}
-
-		s += fmt.Sprintf("%s [%s] %s %s\n", cursor, checked, choice, getting)
+		s += fmt.Sprintf("%s [%s] %s\n", cursor, checked, choice)
 	}
 
-	// The footer
+	if m.response == "" {
+		s += "\nWiating for an API response\n"
+	} else {
+		s += fmt.Sprintf("\n%s\n", m.response)
+	}
+
 	s += "\nPress q to quit.\n"
 
 	return s
+
 }

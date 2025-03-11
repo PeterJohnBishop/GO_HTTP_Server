@@ -1,54 +1,57 @@
 package boba
 
 import (
-	"github.com/charmbracelet/bubbles/spinner"
+	"io"
+	"net/http"
+
 	tea "github.com/charmbracelet/bubbletea"
 )
 
+// When an event (Msg) occurs, do this.
 func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
-	var cmd tea.Cmd
-	var cmds []tea.Cmd
 
 	switch msg := msg.(type) {
 
-	// Is it a key press?
 	case tea.KeyMsg:
 
-		// Cool, what was the actual key pressed?
 		switch msg.String() {
 
-		// These keys should exit the program.
 		case "ctrl+c", "q":
 			return m, tea.Quit
-
-		// The "up" and "k" keys move the cursor up
 		case "up", "k":
 			if m.cursor > 0 {
 				m.cursor--
 			}
-
-		// The "down" and "j" keys move the cursor down
 		case "down", "j":
 			if m.cursor < len(m.options)-1 {
 				m.cursor++
 			}
-
-		// The "enter" key and the spacebar (a literal space) toggle
-		// the selected state for the item that the cursor is pointing at.
 		case "enter", " ":
 			_, ok := m.selected[m.cursor]
 			if ok {
 				delete(m.selected, m.cursor)
 			} else {
 				m.selected[m.cursor] = struct{}{}
+				m.response = testAPI()
 			}
 		}
+	}
+	return m, nil
+}
 
-	// spin the spinner!!!
-	case spinner.TickMsg:
-		m.spinner, cmd = m.spinner.Update(msg)
-		cmds = append(cmds, cmd)
+func testAPI() string {
+	url := "http://localhost:8080/" // Example API
+
+	resp, err := http.Get(url)
+	if err != nil {
+		return err.Error()
+	}
+	defer resp.Body.Close() // Ensure response body is closed
+
+	body, err := io.ReadAll(resp.Body)
+	if err != nil {
+		return err.Error()
 	}
 
-	return m, tea.Batch(cmds...)
+	return string(body)
 }

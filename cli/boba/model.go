@@ -1,29 +1,27 @@
 package boba
 
 import (
-	"github.com/charmbracelet/bubbles/spinner"
 	tea "github.com/charmbracelet/bubbletea"
-	"github.com/charmbracelet/lipgloss"
 )
 
+// Define the data structure.
 type model struct {
+	response string
 	options  []string
 	cursor   int
 	selected map[int]struct{}
-	spinner  spinner.Model
 }
 
+// Initialize the data if needed.
 func InitialModel() model {
-	s := spinner.New()
-	s.Spinner = spinner.Dot
-	s.Style = lipgloss.NewStyle().Foreground(lipgloss.Color("205"))
 	return model{
-		options:  []string{"Users", "Items", "Orders", "Invoices", "Payments"},
+		response: "",
+		options:  []string{"Fetch Test Response"},
 		selected: make(map[int]struct{}),
-		spinner:  s,
 	}
 }
 
+// Send an initial CMD when the app starts.
 func (m model) Init() tea.Cmd {
-	return tea.Batch(m.spinner.Tick)
+	return tea.SetWindowTitle("Run List")
 }
