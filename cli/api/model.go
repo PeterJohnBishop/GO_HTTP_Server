@@ -1,11 +1,11 @@
-package boba
+package api
 
 import (
 	tea "github.com/charmbracelet/bubbletea"
 )
 
 // Define the data structure.
-type model struct {
+type ApiModel struct {
 	response string
 	options  []string
 	cursor   int
@@ -13,8 +13,8 @@ type model struct {
 }
 
 // Initialize the data if needed.
-func InitialModel() model {
-	return model{
+func InitialapiModel() ApiModel {
+	return ApiModel{
 		response: "",
 		options:  []string{"Fetch Test Response"},
 		selected: make(map[int]struct{}),
@@ -22,6 +22,6 @@ func InitialModel() model {
 }
 
 // Send an initial CMD when the app starts.
-func (m model) Init() tea.Cmd {
+func (a ApiModel) Init() tea.Cmd {
 	return tea.Batch(tea.SetWindowTitle("Run List"), testAPI)
 }

@@ -1,4 +1,4 @@
-package boba
+package api
 
 import (
 	"io"
@@ -8,7 +8,7 @@ import (
 )
 
 // When an event (Msg) occurs, do this.
-func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
+func (a ApiModel) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 
 	switch msg := msg.(type) {
 
@@ -17,28 +17,28 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 		switch msg.String() {
 
 		case "ctrl+c", "q":
-			return m, tea.Quit
+			return a, tea.Quit
 		case "up", "k":
-			if m.cursor > 0 {
-				m.cursor--
+			if a.cursor > 0 {
+				a.cursor--
 			}
 		case "down", "j":
-			if m.cursor < len(m.options)-1 {
-				m.cursor++
+			if a.cursor < len(a.options)-1 {
+				a.cursor++
 			}
 		case "enter", " ":
-			_, ok := m.selected[m.cursor]
+			_, ok := a.selected[a.cursor]
 			if ok {
-				delete(m.selected, m.cursor)
+				delete(a.selected, a.cursor)
 			} else {
-				m.selected[m.cursor] = struct{}{}
+				a.selected[a.cursor] = struct{}{}
 			}
 		}
 
 	case initMsg:
-		m.response = string(msg)
+		a.response = string(msg)
 	}
-	return m, nil
+	return a, nil
 }
 
 type initMsg string

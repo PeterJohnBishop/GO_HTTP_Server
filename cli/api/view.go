@@ -1,31 +1,31 @@
-package boba
+package api
 
 import "fmt"
 
 // Create a view string with the model data!
 
-func (m model) View() string {
+func (a ApiModel) View() string {
 
 	s := "\n\nHey there!\n\n"
 
-	for i, choice := range m.options {
+	for i, choice := range a.options {
 		cursor := " "
-		if m.cursor == i {
+		if a.cursor == i {
 			cursor = ">"
 		}
 
 		checked := " "
-		if _, ok := m.selected[i]; ok {
+		if _, ok := a.selected[i]; ok {
 			checked = "x"
 		}
 
 		s += fmt.Sprintf("%s [%s] %s\n", cursor, checked, choice)
 	}
 
-	if m.response == "" {
+	if a.response == "" {
 		s += "\nVerifying server connection...\n"
 	} else {
-		s += fmt.Sprintf("\n%s\n", m.response)
+		s += fmt.Sprintf("\n%s\n", a.response)
 	}
 
 	s += "\nPress q to quit.\n"
