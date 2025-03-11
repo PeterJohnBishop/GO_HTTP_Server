@@ -23,7 +23,7 @@ func (m model) View() string {
 	}
 
 	if m.response == "" {
-		s += "\nWiating for an API response\n"
+		s += "\nVerifying server connection...\n"
 	} else {
 		s += fmt.Sprintf("\n%s\n", m.response)
 	}

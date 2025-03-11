@@ -23,5 +23,5 @@ func InitialModel() model {
 
 // Send an initial CMD when the app starts.
 func (m model) Init() tea.Cmd {
-	return tea.SetWindowTitle("Run List")
+	return tea.Batch(tea.SetWindowTitle("Run List"), testAPI)
 }

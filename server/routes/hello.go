@@ -8,7 +8,7 @@ import (
 // for testing purposes
 func Hello(w http.ResponseWriter, r *http.Request) {
 	response := map[string]interface{}{
-		"message": "Hello, from Server Side!",
+		"status": "Connection to free-adventure-go server confirmed!",
 	}
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(http.StatusOK)

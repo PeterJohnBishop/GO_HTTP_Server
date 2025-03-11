@@ -32,26 +32,30 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 				delete(m.selected, m.cursor)
 			} else {
 				m.selected[m.cursor] = struct{}{}
-				m.response = testAPI()
 			}
 		}
+
+	case initMsg:
+		m.response = string(msg)
 	}
 	return m, nil
 }
 
-func testAPI() string {
+type initMsg string
+
+func testAPI() tea.Msg {
 	url := "http://localhost:8080/" // Example API
 
 	resp, err := http.Get(url)
 	if err != nil {
-		return err.Error()
+		return initMsg(err.Error())
 	}
 	defer resp.Body.Close() // Ensure response body is closed
 
 	body, err := io.ReadAll(resp.Body)
 	if err != nil {
-		return err.Error()
+		return initMsg(err.Error())
 	}
 
-	return string(body)
+	return initMsg(string(body))
 }
