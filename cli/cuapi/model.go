@@ -12,7 +12,7 @@ type CUAPIModel struct {
 func InitCUAPIModel() CUAPIModel {
 	return CUAPIModel{
 		response: "",
-		options:  []string{"Fetch Authorized User", "Fetch Workspaces"},
+		options:  []string{"OAuth", "Fetch Authorized User", "Fetch Workspaces"},
 		selected: make(map[int]struct{}),
 	}
 }

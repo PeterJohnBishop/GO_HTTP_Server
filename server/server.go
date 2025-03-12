@@ -44,6 +44,8 @@ func addUserRoutes(db *sql.DB, mux *http.ServeMux) {
 	mux.HandleFunc("/users/refresh/", middleware.LoggerMiddleware(middleware.VerifyRefreshToken(func(w http.ResponseWriter, r *http.Request) {
 		routes.RefreshTokenHandler(db, w, r)
 	})))
+
+	mux.HandleFunc("/oauth/success/", func(w http.ResponseWriter, r *http.Request) { routes.CodeHandler(w, r) })
 }
 
 func StartServer(db *sql.DB) error {
