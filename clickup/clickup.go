@@ -49,7 +49,6 @@ func GetAccessToken(client_id string, client_secret string) ([]byte, error) {
 	code := os.Getenv("AUTH_CODE")
 
 	url := fmt.Sprintf("https://api.clickup.com/api/v2/oauth/token?client_id=%s&client_secret=%s&code=%s", client_id, client_secret, code)
-	fmt.Printf("https://api.clickup.com/api/v2/oauth/token?client_id=%s&client_secret=%s&code=%s", client_id, client_secret, code)
 
 	req, err := http.NewRequest("POST", url, nil)
 	if err != nil {
@@ -61,7 +60,6 @@ func GetAccessToken(client_id string, client_secret string) ([]byte, error) {
 	if err != nil {
 		return nil, err
 	}
-
 	body, _ := io.ReadAll(resp.Body)
 	var authResp AuthResponse
 	err = json.Unmarshal(body, &authResp)
@@ -71,8 +69,6 @@ func GetAccessToken(client_id string, client_secret string) ([]byte, error) {
 	err = saveToEnv("OAUTH_TOKEN", authResp.AccessToken)
 	if err != nil {
 		return nil, err
-	} else {
-		fmt.Println("OAUTH_TOKEN saved successfully!")
 	}
 	defer resp.Body.Close()
 	return body, nil

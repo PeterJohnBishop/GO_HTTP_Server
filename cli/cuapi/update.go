@@ -37,30 +37,28 @@ func (m CUAPIModel) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 				m.selected[m.cursor] = struct{}{}
 				switch m.cursor {
 				case 0:
-					if m.options[0] == "Get Access Token" {
-						m.response = "Fetching Access Token"
-						return m, getAccessToken
-					} else {
-						m.response = "Starting OAuth Flow"
-						return m, oAuthStart
-					}
+					m.response = "Starting OAuth Flow"
+					m.options = nil
+					m.selected = nil
+					return m, oAuthStart
 				case 1:
-					m.response = "Fetching Workspaces"
-					return m, getWorkspaces
-				case 2:
-					m.response = "Fetching Authorized User"
-					return m, getAuthorizedUser
+					m.response = "Fetching Access Token"
+					return m, getAccessToken
 				}
 			}
 		}
 
 	case respMsg:
 		switch msg {
-		case "Waiting for code.":
-			m.options[0] = "Get Access Token"
-			delete(m.selected, 0)
+		case "Waiting":
+			m.cursor = 0
+			m.options = []string{"Re-Start OAuth", "Save Access Token"}
+			m.selected = make(map[int]struct{})
+
+		case "Ready":
+			m.response = "Ready to make requests!"
 		}
-		m.response = string(msg)
+		//m.response = string(msg)
 	}
 	return m, nil
 }
@@ -93,7 +91,7 @@ func oAuthStart() tea.Msg {
 	if browseErr != nil {
 		return respMsg(browseErr.Error())
 	}
-	return respMsg("Waiting for code.")
+	return respMsg("Waiting")
 }
 
 func getAccessToken() tea.Msg {
@@ -104,12 +102,12 @@ func getAccessToken() tea.Msg {
 	client_id := os.Getenv("CLICKUP_CLIENT_ID")
 	client_secret := os.Getenv("CLICKUP_CLIENT_SECRET")
 
-	body, err := clickup.GetAccessToken(client_id, client_secret)
+	_, err = clickup.GetAccessToken(client_id, client_secret)
 	if err != nil {
 		return respMsg(err.Error())
 	}
 
-	return respMsg(string(body))
+	return respMsg("ready")
 
 }
 
