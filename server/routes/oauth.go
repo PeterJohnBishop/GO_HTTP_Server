@@ -39,6 +39,11 @@ func saveToEnv(key, value string) error {
 		return err
 	}
 
+	err = godotenv.Load()
+	if err != nil {
+		log.Fatal("Error loading .env file")
+	}
+
 	log.Printf("Saved %s=%s to .env\n", key, value)
 	return nil
 }

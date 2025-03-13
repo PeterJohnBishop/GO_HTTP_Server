@@ -1,25 +1,57 @@
 package clickup
 
 import (
-	"bytes"
 	"encoding/json"
+	"fmt"
 	"io"
+	"log"
 	"net/http"
 	"os"
 
 	"github.com/joho/godotenv"
 )
 
-func GetAccessToken(client_id string, client_secret string, code string) ([]byte, error) {
-	url := "https://api.clickup.com/api/v2/oauth/token"
+type AuthResponse struct {
+	AccessToken string `json:"access_token"`
+	TokenType   string `json:"token_type"`
+}
 
-	requestBody, _ := json.Marshal(map[string]string{
-		"client_id":     client_id,
-		"client_secret": client_secret,
-		"code":          code,
-	})
+func saveToEnv(key, value string) error {
+	envFile := ".env"
 
-	req, err := http.NewRequest("GET", url, bytes.NewReader(requestBody))
+	envMap, err := godotenv.Read(envFile)
+	if err != nil {
+		return err
+	}
+
+	envMap[key] = value
+
+	err = godotenv.Write(envMap, envFile)
+	if err != nil {
+		return err
+	}
+
+	err = godotenv.Load()
+	if err != nil {
+		log.Fatal("Error loading .env file")
+	}
+
+	log.Printf("Saved %s=%s to .env\n", key, value)
+	return nil
+}
+
+func GetAccessToken(client_id string, client_secret string) ([]byte, error) {
+	os.Clearenv()
+	err := godotenv.Load()
+	if err != nil {
+		return nil, err
+	}
+	code := os.Getenv("AUTH_CODE")
+
+	url := fmt.Sprintf("https://api.clickup.com/api/v2/oauth/token?client_id=%s&client_secret=%s&code=%s", client_id, client_secret, code)
+	fmt.Printf("https://api.clickup.com/api/v2/oauth/token?client_id=%s&client_secret=%s&code=%s", client_id, client_secret, code)
+
+	req, err := http.NewRequest("POST", url, nil)
 	if err != nil {
 		return nil, err
 	}
@@ -29,7 +61,19 @@ func GetAccessToken(client_id string, client_secret string, code string) ([]byte
 	if err != nil {
 		return nil, err
 	}
+
 	body, _ := io.ReadAll(resp.Body)
+	var authResp AuthResponse
+	err = json.Unmarshal(body, &authResp)
+	if err != nil {
+		return nil, err
+	}
+	err = saveToEnv("OAUTH_TOKEN", authResp.AccessToken)
+	if err != nil {
+		return nil, err
+	} else {
+		fmt.Println("OAUTH_TOKEN saved successfully!")
+	}
 	defer resp.Body.Close()
 	return body, nil
 }
