@@ -1,6 +1,7 @@
 package cuapi
 
 import (
+	"encoding/json"
 	"fmt"
 	"free-adventure-go/main.go/clickup"
 	"os"
@@ -31,45 +32,60 @@ func (m CUAPIModel) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 			}
 		case "enter", " ":
 			_, ok := m.selected[m.cursor]
-			if ok {
-				delete(m.selected, m.cursor)
-			} else {
+			if !ok {
 				m.selected[m.cursor] = struct{}{}
 				switch m.cursor {
 				case 0:
-					m.response = "Starting OAuth Flow"
-					m.options = nil
-					m.selected = nil
+					m.cursor = 0
+					m.selected[m.cursor] = struct{}{}
 					return m, oAuthStart
 				case 1:
-					m.response = "Fetching Access Token"
+					m.cursor = 0
+					m.selected[m.cursor] = struct{}{}
 					return m, getAccessToken
+
 				}
 			}
 		}
 
-	case respMsg:
-		switch msg {
-		case "Waiting":
-			m.cursor = 0
-			m.options = []string{"Re-Start OAuth", "Save Access Token"}
-			m.selected = make(map[int]struct{})
-
-		case "Ready":
-			m.response = "Ready to make requests!"
+	case oauthMsg:
+		m.response = "Ready!"
+		m.options = append(m.options, string(msg))
+		return m, nil
+	case tokenMsg:
+		m.response = "Your OAuth token is saved! Select a Workspace."
+		return m, getWorkspaces
+	case wkspcMsg:
+		m.response = "Workspaces Found!"
+		m.selected = make(map[int]struct{})
+		m.options = []string{}
+		for _, team := range msg {
+			m.options = append(m.options, team.ID+" "+team.Name)
 		}
-		//m.response = string(msg)
 	}
 	return m, nil
 }
 
-type respMsg string
+type errMsg string
+type oauthMsg string
+type tokenMsg string
+type wkspcMsg []Team
+type usrMsg string
+
+type Team struct {
+	ID   string `json:"id"`
+	Name string `json:"name"`
+}
+
+type Response struct {
+	Teams []Team `json:"teams"`
+}
 
 func oAuthStart() tea.Msg {
 
 	err := godotenv.Load()
 	if err != nil {
-		return respMsg(err.Error())
+		return errMsg(err.Error())
 	}
 	client_id := os.Getenv("CLICKUP_CLIENT_ID")
 	redirect_uri := os.Getenv("CLICKUP_REDIRECT_URI")
@@ -87,46 +103,50 @@ func oAuthStart() tea.Msg {
 		cmd = exec.Command("xdg-open", url)
 	}
 
-	browseErr := cmd.Start()
-	if browseErr != nil {
-		return respMsg(browseErr.Error())
+	err = cmd.Start()
+	if err != nil {
+		return errMsg(err.Error())
 	}
-	return respMsg("Waiting")
+
+	return oauthMsg("Find my Authorized Workspaces!")
 }
 
 func getAccessToken() tea.Msg {
 	err := godotenv.Load()
 	if err != nil {
-		return respMsg(err.Error())
+		return errMsg(err.Error())
 	}
 	client_id := os.Getenv("CLICKUP_CLIENT_ID")
 	client_secret := os.Getenv("CLICKUP_CLIENT_SECRET")
 
 	_, err = clickup.GetAccessToken(client_id, client_secret)
 	if err != nil {
-		return respMsg(err.Error())
+		return errMsg(err.Error())
 	}
 
-	return respMsg("ready")
-
+	return tokenMsg("Get Workspaces")
 }
 
 func getAuthorizedUser() tea.Msg {
 
 	body, err := clickup.GetAuthorizedUser()
 	if err != nil {
-		return respMsg(err.Error())
+		return errMsg(err.Error())
 	}
 
-	return respMsg(string(body))
+	return usrMsg(string(body))
 }
 
 func getWorkspaces() tea.Msg {
 
 	body, err := clickup.GetWorkspaces()
 	if err != nil {
-		return respMsg(err.Error())
+		return errMsg(err.Error())
 	}
 
-	return respMsg(string(body))
+	var res Response
+
+	err = json.Unmarshal([]byte(body), &res)
+
+	return wkspcMsg(res.Teams)
 }

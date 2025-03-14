@@ -44,6 +44,6 @@ func saveToEnv(key, value string) error {
 		log.Fatal("Error loading .env file")
 	}
 
-	log.Printf("Saved %s=%s to .env\n", key, value)
+	//log.Printf("Saved %s=%s to .env\n", key, value)
 	return nil
 }
