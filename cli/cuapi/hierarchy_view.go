@@ -12,15 +12,15 @@ func (m HierarchyModel) View() string {
 
 	switch m.lvl {
 	case 0: // Spaces
-		s += fmt.Sprintf("%s in %s/", levels[m.lvl], m.team.Name)
+		s += fmt.Sprintf("\n%s in %s/\n", levels[m.lvl], m.team.Name)
 	case 1: // Folders
-		s += fmt.Sprintf("%s in %s/%s/", levels[m.lvl], m.team.Name, m.space.Name)
+		s += fmt.Sprintf("\n%s in %s/%s/\n", levels[m.lvl], m.team.Name, m.space.Name)
 	case 2: // Folderless Lists
-		s += fmt.Sprintf("%s in %s/%s/", levels[m.lvl], m.team.Name, m.space.Name)
+		s += fmt.Sprintf("\n%s in %s/%s/\n", levels[m.lvl], m.team.Name, m.space.Name)
 	case 3: // Lists
-		s += fmt.Sprintf("%s in %s/%s/%s/", levels[m.lvl], m.team.Name, m.space.Name, m.folder.Name)
+		s += fmt.Sprintf("\n%s in %s/%s/%s/\n", levels[m.lvl], m.team.Name, m.space.Name, m.folder.Name)
 	case 4: // Tasks
-		s += fmt.Sprintf("%s in %s/%s/%s/%s", levels[m.lvl], m.team.Name, m.space.Name, m.folder.Name, m.list.Name)
+		s += fmt.Sprintf("\n%s in %s/%s/%s/%s\n", levels[m.lvl], m.team.Name, m.space.Name, m.folder.Name, m.list.Name)
 	}
 
 	for i, choice := range m.options {
