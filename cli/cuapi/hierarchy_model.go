@@ -3,7 +3,12 @@ package cuapi
 import tea "github.com/charmbracelet/bubbletea"
 
 type HierarchyModel struct {
+	user     User
 	team     Team
+	space    Space
+	folder   Folder
+	list     List
+	task     Task
 	spaces   []Space
 	folders  []Folder
 	lists    []List
@@ -12,11 +17,17 @@ type HierarchyModel struct {
 	options  []string
 	cursor   int
 	selected map[int]struct{}
+	lvl      int
 }
 
-func InitHierarchyModel(t Team) HierarchyModel {
+func InitHierarchyModel(u User, t Team) HierarchyModel {
 	return HierarchyModel{
+		user:     u,
 		team:     t,
+		space:    Space{},
+		folder:   Folder{},
+		list:     List{},
+		task:     Task{},
 		spaces:   []Space{},
 		folders:  []Folder{},
 		lists:    []List{},
@@ -25,11 +36,12 @@ func InitHierarchyModel(t Team) HierarchyModel {
 		options:  []string{},
 		cursor:   0,
 		selected: make(map[int]struct{}),
+		lvl:      0,
 	}
 }
 
 func (m HierarchyModel) Init() tea.Cmd {
-	return nil
+	return getSpaces(m.team.ID)
 }
 
 // JSON-to-Go https://mholt.github.io/json-to-go/
@@ -133,7 +145,7 @@ type Space struct {
 }
 
 type SpaceResponse struct {
-	Spaces Space `json:"spaces"`
+	Spaces []Space `json:"spaces"`
 }
 
 type Folder struct {
@@ -183,7 +195,7 @@ type Folder struct {
 }
 
 type FolderResponse struct {
-	Folders Folder `json:"folders"`
+	Folders []Folder `json:"folders"`
 }
 
 type List struct {
@@ -222,7 +234,7 @@ type List struct {
 }
 
 type ListResponse struct {
-	Lists List `json:"lists"`
+	Lists []List `json:"lists"`
 }
 
 type Task struct {
@@ -411,5 +423,5 @@ type Task struct {
 }
 
 type TaskResponse struct {
-	Tasks Task `json:"tasks"`
+	Tasks []Task `json:"tasks"`
 }

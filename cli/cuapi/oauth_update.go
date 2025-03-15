@@ -52,8 +52,9 @@ func (m OAuthModel) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 							if ok {
 								delete(m.selected, m.cursor)
 							} else {
-								m.selected[m.cursor] = struct{}{}
-								// get Spaces in selected Workspace
+								delete(m.selected, m.cursor)
+								// m.selected[m.cursor] = struct{}{}
+								return InitHierarchyModel(m.user, m.teams[m.cursor]), nil
 							}
 						}
 					}

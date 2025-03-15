@@ -123,3 +123,153 @@ func GetWorkspaces() ([]byte, error) {
 	defer resp.Body.Close()
 	return body, nil
 }
+
+func GetSpaces(team_id string) ([]byte, error) {
+
+	err := godotenv.Load()
+	if err != nil {
+		return nil, err
+	}
+	token := os.Getenv("OAUTH_TOKEN")
+
+	url := fmt.Sprintf("https://api.clickup.com/api/v2/team/%s/space", team_id)
+	req, err := http.NewRequest("GET", url, nil)
+	if err != nil {
+		return nil, err
+	}
+	req.Header.Add("accept", "application/json")
+	req.Header.Add("Authorization", "Bearer "+token)
+	client := &http.Client{}
+	resp, err := client.Do(req)
+	if err != nil {
+		return nil, err
+	}
+	body, _ := io.ReadAll(resp.Body)
+	defer resp.Body.Close()
+	return body, nil
+}
+
+func GetFolders(space_id string) ([]byte, error) {
+
+	err := godotenv.Load()
+	if err != nil {
+		return nil, err
+	}
+	token := os.Getenv("OAUTH_TOKEN")
+
+	url := fmt.Sprintf("https://api.clickup.com/api/v2/space/%s/folder", space_id)
+	req, err := http.NewRequest("GET", url, nil)
+	if err != nil {
+		return nil, err
+	}
+	req.Header.Add("accept", "application/json")
+	req.Header.Add("Authorization", "Bearer "+token)
+	client := &http.Client{}
+	resp, err := client.Do(req)
+	if err != nil {
+		return nil, err
+	}
+	body, _ := io.ReadAll(resp.Body)
+	defer resp.Body.Close()
+	return body, nil
+}
+
+func GetFolderlessLists(space_id string) ([]byte, error) {
+
+	err := godotenv.Load()
+	if err != nil {
+		return nil, err
+	}
+	token := os.Getenv("OAUTH_TOKEN")
+
+	url := fmt.Sprintf("https://api.clickup.com/api/v2/space/%s/list", space_id)
+	req, err := http.NewRequest("GET", url, nil)
+	if err != nil {
+		return nil, err
+	}
+	req.Header.Add("accept", "application/json")
+	req.Header.Add("Authorization", "Bearer "+token)
+	client := &http.Client{}
+	resp, err := client.Do(req)
+	if err != nil {
+		return nil, err
+	}
+	body, _ := io.ReadAll(resp.Body)
+	defer resp.Body.Close()
+	return body, nil
+}
+
+func GetLists(folder_id string) ([]byte, error) {
+
+	err := godotenv.Load()
+	if err != nil {
+		return nil, err
+	}
+	token := os.Getenv("OAUTH_TOKEN")
+
+	url := fmt.Sprintf("https://api.clickup.com/api/v2/folder/%s/list", folder_id)
+	req, err := http.NewRequest("GET", url, nil)
+	if err != nil {
+		return nil, err
+	}
+	req.Header.Add("accept", "application/json")
+	req.Header.Add("Authorization", "Bearer "+token)
+	client := &http.Client{}
+	resp, err := client.Do(req)
+	if err != nil {
+		return nil, err
+	}
+	body, _ := io.ReadAll(resp.Body)
+	defer resp.Body.Close()
+	return body, nil
+}
+
+func GetTasks(list_id string) ([]byte, error) {
+
+	err := godotenv.Load()
+	if err != nil {
+		return nil, err
+	}
+	token := os.Getenv("OAUTH_TOKEN")
+
+	url := fmt.Sprintf("https://api.clickup.com/api/v2/list/%s/task", list_id)
+	req, err := http.NewRequest("GET", url, nil)
+	if err != nil {
+		return nil, err
+	}
+	req.Header.Add("accept", "application/json")
+	req.Header.Add("Authorization", "Bearer "+token)
+	client := &http.Client{}
+	resp, err := client.Do(req)
+	if err != nil {
+		return nil, err
+	}
+	body, _ := io.ReadAll(resp.Body)
+	defer resp.Body.Close()
+	return body, nil
+}
+
+func GetTask(task_id string) ([]byte, error) {
+
+	err := godotenv.Load()
+	if err != nil {
+		return nil, err
+	}
+	token := os.Getenv("OAUTH_TOKEN")
+
+	url := fmt.Sprintf("https://api.clickup.com/api/v2/task/%s", task_id)
+	req, err := http.NewRequest("GET", url, nil)
+	if err != nil {
+		return nil, err
+	}
+	req.Header.Add("accept", "application/json")
+	req.Header.Add("Authorization", "Bearer "+token)
+	client := &http.Client{}
+	resp, err := client.Do(req)
+	if err != nil {
+		return nil, err
+	}
+	body, _ := io.ReadAll(resp.Body)
+	defer resp.Body.Close()
+	return body, nil
+}
