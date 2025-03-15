@@ -105,7 +105,7 @@ func GetWorkspaces() ([]byte, error) {
 	if err != nil {
 		return nil, err
 	}
-	token := os.Getenv("CLICKUP_PK")
+	token := os.Getenv("OAUTH_TOKEN")
 
 	url := "https://api.clickup.com/api/v2/team"
 	req, err := http.NewRequest("GET", url, nil)
@@ -113,7 +113,7 @@ func GetWorkspaces() ([]byte, error) {
 		return nil, err
 	}
 	req.Header.Add("accept", "application/json")
-	req.Header.Add("Authorization", token)
+	req.Header.Add("Authorization", "Bearer "+token)
 	client := &http.Client{}
 	resp, err := client.Do(req)
 	if err != nil {
