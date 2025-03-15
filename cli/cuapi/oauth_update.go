@@ -12,7 +12,7 @@ import (
 	"github.com/joho/godotenv"
 )
 
-func (m CUAPIModel) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
+func (m OAuthModel) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 
 	switch msg := msg.(type) {
 
@@ -34,34 +34,57 @@ func (m CUAPIModel) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 			_, ok := m.selected[m.cursor]
 			if !ok {
 				m.selected[m.cursor] = struct{}{}
-				switch m.cursor {
-				case 0:
-					m.cursor = 0
-					m.selected[m.cursor] = struct{}{}
-					return m, oAuthStart
-				case 1:
-					m.cursor = 0
-					m.selected[m.cursor] = struct{}{}
-					return m, getAccessToken
+				if len(m.teams) == 0 {
+					switch m.cursor {
 
+					case 0:
+						m.cursor = 0
+						m.selected[m.cursor] = struct{}{}
+						return m, oAuthStart
+					case 1:
+						m.cursor = 0
+						m.selected[m.cursor] = struct{}{}
+						return m, tea.Batch(getAccessToken, getAuthorizedUser)
+					}
+				} else {
+					for index := range m.teams {
+						if m.cursor == index {
+							if ok {
+								delete(m.selected, m.cursor)
+							} else {
+								m.selected[m.cursor] = struct{}{}
+								// get Spaces in selected Workspace
+							}
+						}
+					}
 				}
 			}
 		}
 
 	case oauthMsg:
-		m.response = "Ready!"
+		m.message = "Ready!"
 		m.options = append(m.options, string(msg))
 		return m, nil
 	case tokenMsg:
-		m.response = "Your OAuth token is saved! Select a Workspace."
+		m.message = "Your OAuth token is saved! Select a Workspace."
 		return m, getWorkspaces
 	case wkspcMsg:
-		m.response = "Workspaces Found!"
+		m.message = "Workspaces Found!"
 		m.selected = make(map[int]struct{})
 		m.options = []string{}
 		for _, team := range msg {
 			m.options = append(m.options, team.ID+" "+team.Name)
+			m.teams = append(m.teams, team)
 		}
+	case usrMsg:
+		m.user.ID = msg.ID
+		m.user.Username = msg.Username
+		m.user.Email = msg.Email
+		m.user.Color = msg.Color
+		m.user.Initials = msg.Initials
+		m.user.Timezone = msg.Timezone
+		m.user.WeekStartDay = msg.WeekStartDay
+		m.user.ProfilePicture = msg.ProfilePicture
 	}
 	return m, nil
 }
@@ -70,16 +93,7 @@ type errMsg string
 type oauthMsg string
 type tokenMsg string
 type wkspcMsg []Team
-type usrMsg string
-
-type Team struct {
-	ID   string `json:"id"`
-	Name string `json:"name"`
-}
-
-type Response struct {
-	Teams []Team `json:"teams"`
-}
+type usrMsg User
 
 func oAuthStart() tea.Msg {
 
@@ -127,16 +141,6 @@ func getAccessToken() tea.Msg {
 	return tokenMsg("Get Workspaces")
 }
 
-func getAuthorizedUser() tea.Msg {
-
-	body, err := clickup.GetAuthorizedUser()
-	if err != nil {
-		return errMsg(err.Error())
-	}
-
-	return usrMsg(string(body))
-}
-
 func getWorkspaces() tea.Msg {
 
 	body, err := clickup.GetWorkspaces()
@@ -144,9 +148,29 @@ func getWorkspaces() tea.Msg {
 		return errMsg(err.Error())
 	}
 
-	var res Response
+	var res TeamResponse
 
 	err = json.Unmarshal([]byte(body), &res)
+	if err != nil {
+		return errMsg(err.Error())
+	}
 
 	return wkspcMsg(res.Teams)
+}
+
+func getAuthorizedUser() tea.Msg {
+
+	body, err := clickup.GetAuthorizedUser()
+	if err != nil {
+		return errMsg(err.Error())
+	}
+
+	var res UserResponse
+
+	err = json.Unmarshal([]byte(body), &res)
+	if err != nil {
+		return errMsg(err.Error())
+	}
+	fmt.Println(res.User)
+	return usrMsg(res.User)
 }

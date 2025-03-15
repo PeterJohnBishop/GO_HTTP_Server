@@ -2,9 +2,9 @@ package cuapi
 
 import "fmt"
 
-func (m CUAPIModel) View() string {
+func (m OAuthModel) View() string {
 
-	s := "\n\nHey there!\n\n"
+	s := fmt.Sprintf("\n%d %s\n\n", m.user.ID, m.user.Username)
 
 	for i, choice := range m.options {
 		cursor := " "
@@ -20,7 +20,7 @@ func (m CUAPIModel) View() string {
 		s += fmt.Sprintf("%s [%s] %s\n", cursor, checked, choice)
 	}
 
-	s += fmt.Sprintf("\n%s\n", m.response)
+	s += fmt.Sprintf("\n%s\n", m.message)
 
 	s += "\nPress q to quit.\n"
 

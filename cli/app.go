@@ -10,7 +10,7 @@ import (
 )
 
 func StartCLI() {
-	p := tea.NewProgram(cuapi.InitCUAPIModel())
+	p := tea.NewProgram(cuapi.InitOAuthModel())
 	if _, err := p.Run(); err != nil {
 		fmt.Printf("Alas, there's been an error: %v", err)
 		os.Exit(1)
